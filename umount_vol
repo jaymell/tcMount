@@ -1,7 +1,8 @@
-#!/bin/bash -e
+#!/bin/bash 
 
 # input file name:
 [[ -z $1 ]] && echo "No file provided" && exit 1
+file_name=$1
 # specify mount dest if not provided:
 if [[ -z $2 ]]
 then
@@ -12,11 +13,12 @@ fi
 
 uid=$(id -u $USER)
 gid=$(id -g $USER)
-device=/dev/loop0
 
 sudo umount "$mount_dest"
-sudo losetup -d $device
-sudo dmsetup remove $1
-devices_to_remove=$(sudo dmsetup ls | sort | grep $1 | awk '{print $1}')
-for i in $devices_to_remove; do sudo dmsetup remove $i; done
+
+losetup_devices_to_remove=$(losetup | grep $file_name | awk '{print $1}')
+for i in $losetup_devices_to_remove; do sudo losetup -d $i; done
+
+dm_setup_devices_to_remove=$(sudo dmsetup ls | sort | grep $file_name | awk '{print $1}')
+for i in $dm_setup_devices_to_remove; do sudo dmsetup remove $i; done
 

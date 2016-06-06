@@ -1,21 +1,22 @@
 #!/bin/bash
 
-# input file name:
-[[ -z $1 ]] && echo "No file provided" && exit 1
-# specify mount dest if not provided:
+if [ -z $1 ]
+then
+	echo "No file provided"
+	exit 1
+fi
 if [[ -z $2 ]]
 then
-	mount_dest=./mnt
+    mount_dest=./mnt
 else
-	mount_dest="$2"
+    mount_dest="$2"
 fi
 
 uid=$(id -u $USER)
 gid=$(id -g $USER)
 
-# get name of next free device:
 device=$(sudo losetup -f)
 
 sudo losetup $device $1 && \
 sudo tcplay -m $1 -d $device && \
-sudo mount -o nodev,nosuid,uid=$uid,gid=$gid /dev/mapper/$1 "$mount_dest"
+sudo mount -o nodev,nosuid,uid=$uid,gid=$gid /dev/mapper/$1 $mount_dest
