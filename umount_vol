@@ -19,6 +19,7 @@ sudo umount "$mount_dest"
 losetup_devices_to_remove=$(losetup | grep $file_name | awk '{print $1}')
 for i in $losetup_devices_to_remove; do sudo losetup -d $i; done
 
-dm_setup_devices_to_remove=$(sudo dmsetup ls | sort | grep $file_name | awk '{print $1}')
+# sort by device name, in reverse order so highest unmounted first:
+dm_setup_devices_to_remove=$(sudo dmsetup ls | sort -r -k 2 | grep $file_name | awk '{print $1}')
 for i in $dm_setup_devices_to_remove; do sudo dmsetup remove $i; done
 
